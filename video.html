@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقع مشاركة الفيديوهات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-section {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .upload-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .upload-section h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .upload-area {
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            padding: 40px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .upload-area.dragover {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: white;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #48cae4, #023e8a);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .title-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .title-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .videos-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .videos-section h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .video-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border-color: #667eea;
+        }
+
+        .video-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .video-card video {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .no-videos {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            padding: 40px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48cae4, #023e8a);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 موقع مشاركة الفيديوهات</h1>
+        
+        <div class="upload-section">
+            <h2>📤 رفع فيديو جديد</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">🎥</div>
+                <p style="color: white; font-size: 1.2em; margin-bottom: 15px;">اسحب الفيديو هنا أو انقر للاختيار</p>
+                <input type="file" class="file-input" id="fileInput" accept="video/*">
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    اختر الفيديو
+                </button>
+            </div>
+            <input type="text" class="title-input" id="titleInput" placeholder="عنوان الفيديو (اختياري)">
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="videos-section">
+            <h2>📺 الفيديوهات المشتركة</h2>
+            <div class="videos-grid" id="videosGrid">
+                <div class="no-videos">
+                    <p>لا توجد فيديوهات حتى الآن. كن أول من يرفع فيديو!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تخزين الفيديوهات في الذاكرة
+        let videos = [];
+        let videoCounter = 0;
+
+        // عناصر DOM
+        const fileInput = document.getElementById('fileInput');
+        const titleInput = document.getElementById('titleInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const videosGrid = document.getElementById('videosGrid');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+
+        // إعداد أحداث السحب والإفلات
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('video/')) {
+                handleVideoUpload(files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('video/')) {
+                handleVideoUpload(file);
+            }
+        });
+
+        function handleVideoUpload(file) {
+            const title = titleInput.value.trim() || `فيديو ${videoCounter + 1}`;
+            
+            // إظهار شريط التقدم
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            // محاكاة تقدم الرفع
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 100) progress = 100;
+                progressFill.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        addVideoToGrid(file, title);
+                        titleInput.value = '';
+                        fileInput.value = '';
+                    }, 500);
+                }
+            }, 200);
+        }
+
+        function addVideoToGrid(file, title) {
+            const videoId = ++videoCounter;
+            const videoURL = URL.createObjectURL(file);
+            const uploadTime = new Date().toLocaleString('ar-EG');
+            
+            const videoData = {
+                id: videoId,
+                title: title,
+                url: videoURL,
+                file: file,
+                uploadTime: uploadTime,
+                size: formatFileSize(file.size)
+            };
+            
+            videos.push(videoData);
+            renderVideos();
+        }
+
+        function renderVideos() {
+            if (videos.length === 0) {
+                videosGrid.innerHTML = `
+                    <div class="no-videos">
+                        <p>لا توجد فيديوهات حتى الآن. كن أول من يرفع فيديو!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            videosGrid.innerHTML = videos.map(video => `
+                <div class="video-card" style="animation: fadeIn 0.5s ease-in">
+                    <h3>${video.title}</h3>
+                    <video controls>
+                        <source src="${video.url}" type="${video.file.type}">
+                        متصفحك لا يدعم تشغيل الفيديو.
+                    </video>
+                    <div class="video-info">
+                        <span>📅 ${video.uploadTime}</span>
+                        <span>📁 ${video.size}</span>
+                        <button class="delete-btn" onclick="deleteVideo(${video.id})">
+                            🗑️ حذف
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteVideo(videoId) {
+            if (confirm('هل تريد حذف هذا الفيديو؟')) {
+                const videoIndex = videos.findIndex(v => v.id === videoId);
+                if (videoIndex !== -1) {
+                    // تحرير الذاكرة
+                    URL.revokeObjectURL(videos[videoIndex].url);
+                    videos.splice(videoIndex, 1);
+                    renderVideos();
+                }
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 بايت';
+            const k = 1024;
+            const sizes = ['بايت', 'كيلوبايت', 'ميجابايت', 'جيجابايت'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // إضافة تأثير الظهور
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // تنظيف الذاكرة عند إغلاق الصفحة
+        window.addEventListener('beforeunload', () => {
+            videos.forEach(video => {
+                URL.revokeObjectURL(video.url);
+            });
+        });
+    </script>
+</body>
+</html>
